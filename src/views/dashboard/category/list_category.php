@@ -6,19 +6,10 @@ try {
     $database = new Database();
     $pdo = $database->connect();
 
-    $query = "
-SELECT 
-    c.id, 
-    c.name AS category_name, 
-    COUNT(b.id) AS book_count 
-FROM 
-    categories c 
-LEFT JOIN 
-    books b 
-ON 
-    c.name = b.kategori 
-GROUP BY 
-    c.id, c.name";
+    $query = "SELECT c.id, c.name_222263, COUNT(b.id) AS jumlah_categorie
+    FROM categories_222263 c
+    LEFT JOIN reseps_222263 b ON c.id = b.kategori_222263
+    GROUP BY c.id, c.name_222263";
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -48,9 +39,9 @@ GROUP BY
         <li class="bg-white shadow-lg p-4 flex items-start space-x-6 border border-slate-300 rounded-lg transform hover:scale-105 transition-transform duration-300">
             <div class="flex-1">
                 <h2 class="text-2xl font-semibold mb-3 text-gray-800">
-                    <?php echo htmlspecialchars($category['category_name']); ?>
+                    <?php echo htmlspecialchars($category['name_222263']); ?>
                 </h2>
-                <p class="text-gray-600"><strong>Books:</strong> <?php echo htmlspecialchars($category['book_count']); ?></p>
+                <p class="text-gray-600"><strong>Jumlah:</strong> <?php echo htmlspecialchars($category['jumlah_categorie']); ?> Resep</p>
             </div>
             <div class="flex space-x-3">
                 <a href="/public/admin/update-category?category_id=<?= $category['id']; ?>" class="bg-yellow-500 p-2 px-4 rounded-lg text-white font-bold shadow-md hover:bg-yellow-600 transition-colors duration-300">

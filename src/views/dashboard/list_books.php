@@ -9,7 +9,7 @@ try {
     die("Gagal terhubung ke database: " . $e->getMessage());
 }
 
-$query = "SELECT * FROM books";
+$query = "SELECT * FROM reseps_222263";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,12 +23,12 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <ul class="list-none space-y-4 cursor-pointer">
         <?php foreach ($books as $book): ?>
             <li class="bg-white shadow-md p-3 flex items-start space-x-4 border border-slate-400 rounded-lg hover:bg-gray-950 hover:text-white transition-all duration-200">
-                <img src="<?php echo htmlspecialchars($book['cover']); ?>" alt="Cover" class="w-32 h-48 object-cover rounded-md">
+                <img src="/../src/views/uploads/covers/<?php echo htmlspecialchars($book['cover_222263']); ?>" alt="Cover" class="w-32 h-48 object-cover rounded-md">
                 <div class="flex-1">
-                    <h2 class="text-xl font-semibold mb-2"><?php echo htmlspecialchars($book['judul']); ?></h2>
-                    <p class="mb-2"><strong>Kategori:</strong> <?php echo htmlspecialchars($book['kategori']); ?></p>
-                    <p class="mb-4"><?php echo htmlspecialchars($book['deskripsi']); ?></p>
-                    <p><strong>Jumlah:</strong> <?php echo htmlspecialchars($book['jumlah']); ?></p>
+                    <h2 class="text-xl font-semibold mb-2"><?php echo htmlspecialchars($book['judul_222263']); ?></h2>
+                    <p class="mb-2"><strong>Kategori:</strong> <?php echo htmlspecialchars($book['kategori_222263']); ?></p>
+                    <p class="mb-4"><?php echo htmlspecialchars($book['deskripsi_222263']); ?></p>
+                    <p><strong>Jumlah:</strong> <?php echo htmlspecialchars($book['jumlah_222263']); ?></p>
                 </div>
             </li>
         <?php endforeach; ?>
