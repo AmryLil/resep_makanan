@@ -43,17 +43,18 @@ try {
                 </h2>
                 <p class="text-gray-600"><strong>Jumlah:</strong> <?php echo htmlspecialchars($category['jumlah_categorie']); ?> Resep</p>
             </div>
-            <!-- <div class="flex space-x-3">
-                <a href="/public/admin/update-category?category_id=<?= $category['id']; ?>" class="bg-yellow-500 p-2 px-4 rounded-lg text-white font-bold shadow-md hover:bg-yellow-600 transition-colors duration-300">
-                    Update
-                </a>
-                <form action="/public/admin/delete-category" method="GET" class="inline-block">
-                    <input type="hidden" name="category_id" value="<?= $category['id']; ?>">
-                    <button type="submit" class="bg-red-500 p-2 px-4 rounded-lg text-white font-bold shadow-md hover:bg-red-600 transition-colors duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
-                        Delete
-                    </button>
-                </form>
-            </div> -->
+            <div class="flex space-x-3">
+            <form action="/public/admin/update-category" method="GET" class="inline-block">
+                <input type="hidden" name="category_id_222263" value="<?php echo $category['id']; ?>">
+                <button type="submit" class="bg-yellow-600 p-1 px-3 text-base rounded-lg text-white font-bold">Update</button>
+            </form>
+
+            <!-- Tombol Delete -->
+            <form action="/public/admin/delete-category" method="GET" class="inline-block">
+                <input type="hidden" name="category_id_222263" value="<?php echo $category['id']; ?>">
+                <button type="submit" class="bg-red-600 p-1 px-3 text-base rounded-lg text-white font-bold" onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?');">Delete</button>
+            </form>
+            </div>
         </li>
     <?php endforeach; ?>
 </ul>
