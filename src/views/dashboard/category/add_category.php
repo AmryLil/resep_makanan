@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_category'])) {
         $pdo = $database->connect();
 
         $name = htmlspecialchars($_POST['name']);
-        $query = "INSERT INTO categories (name) VALUES (?)";
+        $query = "INSERT INTO categories_222263 (name_222263) VALUES (?)";
         $stmt = $pdo->prepare($query);
         $stmt->execute([$name]);
 

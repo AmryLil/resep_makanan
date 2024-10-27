@@ -1,20 +1,18 @@
 <?php
 require_once __DIR__ . '../../../../config/db.php';
 
-$bookId = isset($_GET['book_id']) ? (int)$_GET['book_id'] : null;
+$bookId = isset($_GET['book_id_222263']) ? (int)$_GET['book_id_222263'] : null;
 
 if ($bookId === null) {
     echo "Book ID tidak ditemukan.";
     exit;
 }
 
-
-
 try {
     $database = new Database();
     $pdo = $database->connect();
     
-    $query = "SELECT * FROM books WHERE id = :book_id";
+    $query = "SELECT * FROM reseps_222263 WHERE id = :book_id";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
     $stmt->execute();
@@ -27,13 +25,13 @@ try {
 } catch (PDOException $e) {
     die("Gagal mengambil data buku: " . $e->getMessage());
 }
-$query = "SELECT * FROM categories";
+$query = "SELECT * FROM categories_222263";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-$bahanList = explode(", ", $book['bahan']);
+$bahanList = explode(", ", $book['bahan_222263']);
 $bahanWithNumbers = [];
 foreach ($bahanList as $index => $bahanItem) {
     $bahanWithNumbers[] = ($index + 1) . ". " . $bahanItem;
@@ -41,7 +39,7 @@ foreach ($bahanList as $index => $bahanItem) {
 $bahanText = implode("\n", $bahanWithNumbers);
 
 // Ambil data langkah pembuatan dari database dan tambahkan nomor urut
-$langkahList = explode(", ", $book['langkah_pembuatan']);
+$langkahList = explode(", ", $book['langkah_pembuatan_222263']);
 $langkahWithNumbers = [];
 foreach ($langkahList as $index => $langkahItem) {
     $langkahWithNumbers[] = ($index + 1) . ". " . $langkahItem;
@@ -55,8 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category = htmlspecialchars($_POST['category']);
     $description = htmlspecialchars($_POST['description']);
     $quantity = (int)$_POST['quantity'];
-    $cover = $book['cover'];
-    $pdf = $book['pdf'];
+    $cover = $book['cover_222263'];
     $bahan = htmlspecialchars($_POST['bahan']);
     $langkah_pembuatan = htmlspecialchars($_POST['langkah_pembuatan']);
 
@@ -83,34 +80,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Handle PDF upload
-    if (isset($_FILES['pdf']) && $_FILES['pdf']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = __DIR__ . '/../../uploads/pdfs/';
-        $pdfFile = basename($_FILES['pdf']['name']);
-        $uploadFile = $uploadDir . $pdfFile;
-
-        if (move_uploaded_file($_FILES['pdf']['tmp_name'], $uploadFile)) {
-            $pdf = $pdfFile;
-        } else {
-            echo "Gagal meng-upload file PDF.<br>";
-        }
-    }
-
+ 
     // Update data in the database
-    try {
-        $query = "UPDATE books SET judul = ?, kategori = ?, deskripsi = ?, jumlah = ?, cover = ?, pdf = ?, bahan = ?, langkah_pembuatan = ? WHERE id = ?";
+   try {
+        $query = "UPDATE reseps_222263 
+                  SET judul_222263 = ?, kategori_222263 = ?, deskripsi_222263 = ?, jumlah_222263 = ?, 
+                      cover_222263 = ?, bahan_222263 = ?, langkah_pembuatan_222263 = ? 
+                  WHERE id = ?";
         $stmt = $pdo->prepare($query);
-        
-        // Debugging: Cek nilai yang akan dimasukkan
-        var_dump([$title, $category, $description, $quantity, $cover, $pdf, $bahan, $langkah_pembuatan, $bookId]);
-
-        // Pastikan jumlah parameter sesuai
-        if (count([$title, $category, $description, $quantity, $cover, $pdf, $bahan, $langkah_pembuatan, $bookId]) !== 9) {
-            echo "Jumlah parameter tidak sesuai.";
-            exit;
-        }
 
         // Eksekusi query
-        $stmt->execute([$title, $category, $description, $quantity, $cover, $pdf, $bahan, $langkah_pembuatan, $bookId]);
+        $stmt->execute([$title, $category, $description, $quantity, $cover, $bahan, $langkah_pembuatan, $bookId]);
 
         echo "Buku berhasil diperbarui!";
         header("Location: /public/admin/books");
@@ -133,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form method="POST" enctype="multipart/form-data" class="space-y-4 w-full p-4">
                     <div>
                         <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Title:</label>
-                        <input type="text" id="title" name="title" required value="<?php echo htmlspecialchars($book['judul']); ?>"
+                        <input type="text" id="title" name="title" required value="<?php echo htmlspecialchars($book['judul_222263']); ?>"
                                class="form-input block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
                     </div>
 
@@ -142,19 +122,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select id="category" name="category" required
             class="form-select block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
         <?php foreach ($categories as $category): ?>
-            <option value="<?= htmlspecialchars($category['id']) ?>"><?= htmlspecialchars($category['name']) ?></option>
+            <option value="<?= htmlspecialchars($category['id']) ?>"><?= htmlspecialchars($category['name_222263']) ?></option>
         <?php endforeach; ?>
 
                     <div>
                         <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
                         <textarea id="description" name="description" rows="4" required
-                                  class="form-textarea block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3"><?php echo htmlspecialchars($book['deskripsi']); ?></textarea>
+                                  class="form-textarea block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3"><?php echo htmlspecialchars($book['deskripsi_222263']); ?></textarea>
                     </div>
 
 
                     <div>
                 <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Waktu maks:</label>
-                <input type="number" id="quantity" name="quantity" required min="1" value="<?php echo htmlspecialchars($book['jumlah']); ?>"
+                <input type="number" id="quantity" name="quantity" required min="1" value="<?php echo htmlspecialchars($book['jumlah_222263']); ?>"
                        class="form-input block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
             </div>
             <div>
@@ -178,20 +158,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="cover" class="block text-gray-700 text-sm font-bold mb-2">Cover Image:</label>
                         <input type="file" id="cover" name="cover" accept="image/*"
                                class="form-input block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
-                        <?php if ($book['cover']): ?>
-                            <img src="/uploads/covers/<?php echo htmlspecialchars($book['cover']); ?>" alt="Cover"
+                        <?php if ($book['cover_222263']): ?>
+                            <img src="/uploads/covers/<?php echo htmlspecialchars($book['cover_222263']); ?>" alt="Cover"
                                  class="w-32 h-48 object-cover mt-3 rounded-md">
                         <?php endif; ?>
                     </div>
 
-                    <div>
-                        <label for="pdf" class="block text-gray-700 text-sm font-bold mb-2">PDF:</label>
-                        <input type="file" id="pdf" name="pdf" accept=".pdf"
-                               class="form-input block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
-                        <?php if ($book['pdf']): ?>
-                            <p class="mt-2">Current PDF: <a href="/uploads/pdfs/<?php echo htmlspecialchars($book['pdf']); ?>" class="text-blue-500 underline"><?php echo htmlspecialchars($book['pdf']); ?></a></p>
-                        <?php endif; ?>
-                    </div>
+                    
 
                     <div>
                         <button type="submit"

@@ -43,7 +43,7 @@ try {
                 </h2>
                 <p class="text-gray-600"><strong>Jumlah:</strong> <?php echo htmlspecialchars($category['jumlah_categorie']); ?> Resep</p>
             </div>
-            <div class="flex space-x-3">
+            <!-- <div class="flex space-x-3">
                 <a href="/public/admin/update-category?category_id=<?= $category['id']; ?>" class="bg-yellow-500 p-2 px-4 rounded-lg text-white font-bold shadow-md hover:bg-yellow-600 transition-colors duration-300">
                     Update
                 </a>
@@ -53,7 +53,7 @@ try {
                         Delete
                     </button>
                 </form>
-            </div>
+            </div> -->
         </li>
     <?php endforeach; ?>
 </ul>

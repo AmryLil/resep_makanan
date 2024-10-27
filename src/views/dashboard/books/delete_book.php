@@ -13,7 +13,7 @@ try {
     $database = new Database();
     $pdo = $database->connect();
 
-    $query = "DELETE FROM books_222263 WHERE id = :id";
+    $query = "DELETE FROM reseps_222263 WHERE id = :id";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':id', $book_id, PDO::PARAM_INT);
     $stmt->execute();

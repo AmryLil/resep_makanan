@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 
-$user_id = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : null;
+$user_id = isset($_SESSION['user_222263']['id']) ? (int)$_SESSION['user_222263']['id'] : null;
 
 if ($user_id === null) {
     echo "User ID tidak ditemukan. Pastikan Anda sudah login.";
     exit;
 }
 
-$bookId = isset($_GET['book_id']) ? (int)$_GET['book_id'] : null;
+$bookId = isset($_GET['book_id_222263']) ? (int)$_GET['book_id_f22263'] : null;
 
 if ($bookId === null) {
     echo "Book ID tidak ditemukan.";
