@@ -1,70 +1,67 @@
 <?php
 require_once __DIR__ . '../../../../config/db.php';
 
-$bookId = isset($_GET['book_id_222263']) ? (int)$_GET['book_id_222263'] : null;
+$bookId = isset($_GET['book_id_222263']) ? (int) $_GET['book_id_222263'] : null;
 
 if ($bookId === null) {
-    echo "Book ID tidak ditemukan.";
+    echo 'Book ID tidak ditemukan.';
     exit;
 }
 
 try {
     $database = new Database();
     $pdo = $database->connect();
-    
-    $query = "SELECT * FROM reseps_222263 WHERE id = :book_id";
+
+    $query = 'SELECT * FROM reseps_222263 WHERE id = :book_id';
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
     $stmt->execute();
     $book = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$book) {
-        echo "Buku tidak ditemukan.";
+        echo 'Buku tidak ditemukan.';
         exit;
     }
 } catch (PDOException $e) {
-    die("Gagal mengambil data buku: " . $e->getMessage());
+    die('Gagal mengambil data buku: ' . $e->getMessage());
 }
-$query = "SELECT * FROM categories_222263";
+$query = 'SELECT * FROM categories_222263';
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-$bahanList = explode(", ", $book['bahan_222263']);
+$bahanList = explode(', ', $book['bahan_222263']);
 $bahanWithNumbers = [];
 foreach ($bahanList as $index => $bahanItem) {
-    $bahanWithNumbers[] = ($index + 1) . ". " . $bahanItem;
+    $bahanWithNumbers[] = ($index + 1) . '. ' . $bahanItem;
 }
 $bahanText = implode("\n", $bahanWithNumbers);
 
 // Ambil data langkah pembuatan dari database dan tambahkan nomor urut
-$langkahList = explode(", ", $book['langkah_pembuatan_222263']);
+$langkahList = explode(', ', $book['langkah_pembuatan_222263']);
 $langkahWithNumbers = [];
 foreach ($langkahList as $index => $langkahItem) {
-    $langkahWithNumbers[] = ($index + 1) . ". " . $langkahItem;
+    $langkahWithNumbers[] = ($index + 1) . '. ' . $langkahItem;
 }
 $langkahText = implode("\n", $langkahWithNumbers);
-
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = htmlspecialchars($_POST['title']);
     $category = htmlspecialchars($_POST['category']);
     $description = htmlspecialchars($_POST['description']);
-    $quantity = (int)$_POST['quantity'];
+    $quantity = (int) $_POST['quantity'];
     $cover = $book['cover_222263'];
     $bahan = htmlspecialchars($_POST['bahan']);
     $langkah_pembuatan = htmlspecialchars($_POST['langkah_pembuatan']);
 
     // Menggabungkan bahan dan langkah pembuatan menjadi string
-    $bahanList = explode("\n", trim($bahan)); // Memisahkan bahan
-    $langkahPembuatanList = explode("\n", trim($langkah_pembuatan)); // Memisahkan langkah
+    $bahanList = explode("\n", trim($bahan));  // Memisahkan bahan
+    $langkahPembuatanList = explode("\n", trim($langkah_pembuatan));  // Memisahkan langkah
 
     // Menggabungkan bahan dan langkah pembuatan menjadi string
-    $bahan = implode(", ", $bahanList); // Misalnya, menggabungkan dengan koma
-    $langkah_pembuatan = implode(", ", $langkahPembuatanList); // Misalnya, menggabungkan dengan koma
-
+    $bahan = implode(', ', $bahanList);  // Misalnya, menggabungkan dengan koma
+    $langkah_pembuatan = implode(', ', $langkahPembuatanList);  // Misalnya, menggabungkan dengan koma
 
     // Handle cover image upload
     if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
@@ -75,40 +72,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadFile)) {
             $cover = $coverFile;
         } else {
-            echo "Gagal meng-upload file cover.<br>";
+            echo 'Gagal meng-upload file cover.<br>';
         }
     }
 
     // Handle PDF upload
- 
+
     // Update data in the database
-   try {
-        $query = "UPDATE reseps_222263 
+    try {
+        $query = 'UPDATE reseps_222263 
                   SET judul_222263 = ?, kategori_222263 = ?, deskripsi_222263 = ?, jumlah_222263 = ?, 
                       cover_222263 = ?, bahan_222263 = ?, langkah_pembuatan_222263 = ? 
-                  WHERE id = ?";
+                  WHERE id = ?';
         $stmt = $pdo->prepare($query);
 
         // Eksekusi query
         $stmt->execute([$title, $category, $description, $quantity, $cover, $bahan, $langkah_pembuatan, $bookId]);
 
-        echo "Buku berhasil diperbarui!";
-        header("Location: /public/admin/books");
+        echo 'Buku berhasil diperbarui!';
+        header('Location: /public/admin/books');
         exit;
     } catch (PDOException $e) {
-        echo "Gagal memperbarui buku di database: " . $e->getMessage() . "<br>";
+        echo 'Gagal memperbarui buku di database: ' . $e->getMessage() . '<br>';
     }
 }
 ?>
 
 <link rel="stylesheet" href="../../../../css/tailwind.css">
-<?php include "../src/views/dashboard/sidebar.php" ?>
+<?php include '../src/views/dashboard/sidebar.php' ?>
 
 <div class="p-4 sm:ml-64 h-full">
     <div class="p-3 py-0 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
         <div class="container mx-auto p-6 mt-10 flex flex-wrap">
             <div class="w-full md:w-1/2 pr-4">
-                <h1 class="text-3xl font-bold w-full bg-slate-950 text-white p-5 rounded-lg">Update Book</h1>
+                <h1 class="text-3xl font-bold w-full bg-slate-950 text-white p-5 rounded-lg">Update Resep</h1>
 
                 <form method="POST" enctype="multipart/form-data" class="space-y-4 w-full p-4">
                     <div>
@@ -142,8 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <textarea id="bahan" name="bahan" rows="4" required
               class="form-textarea block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3"
               placeholder="Masukkan bahan satu per satu, tekan Enter untuk menambah bahan baru."><?php
-        echo htmlspecialchars($bahanText); // Tampilkan bahan dengan nomor urut
-    ?></textarea>
+echo htmlspecialchars($bahanText);  // Tampilkan bahan dengan nomor urut
+?></textarea>
 </div>
 
 <div>
@@ -151,8 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <textarea id="langkah_pembuatan" name="langkah_pembuatan" rows="4" required
               class="form-textarea block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3"
               placeholder="Masukkan langkah satu per satu, tekan Enter untuk menambah langkah baru."><?php
-        echo htmlspecialchars($langkahText); // Tampilkan langkah pembuatan dengan nomor urut
-    ?></textarea>
+echo htmlspecialchars($langkahText);  // Tampilkan langkah pembuatan dengan nomor urut
+?></textarea>
 </div>
                     <div>
                         <label for="cover" class="block text-gray-700 text-sm font-bold mb-2">Cover Image:</label>

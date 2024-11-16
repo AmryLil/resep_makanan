@@ -8,7 +8,10 @@ try {
     die("Gagal terhubung ke database: " . $e->getMessage());
 }
 
-$query = "SELECT * FROM reseps_222263";
+// Query dengan JOIN untuk menggabungkan tabel reseps dan categories
+$query = "SELECT reseps_222263.*, categories_222263.name_222263 
+          FROM reseps_222263 
+          JOIN categories_222263 ON reseps_222263.kategori_222263 = categories_222263.id";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $reseps = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -18,7 +21,7 @@ $reseps = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="flex justify-between bg-black items-center p-4 rounded-lg mb-3">
         <h1 class="text-3xl font-bold text-white">Kelola Resep</h1>
         <a href="/public/admin/add-book">
-            <button class="bg-white rounded-lg shadow-sm p-1 px-4 text-slate-950 font-bold text-lg">Add Book</button>
+            <button class="bg-white rounded-lg shadow-sm p-1 px-4 text-slate-950 font-bold text-lg">Tambah Resep</button>
         </a>
     </div>
     <ul class="list-none space-y-4">
@@ -27,7 +30,7 @@ $reseps = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <img src="/../src/views/uploads/covers/<?php echo htmlspecialchars($resep['cover_222263']); ?>" alt="Cover" class="w-32 h-48 object-cover rounded-md">
             <div class="flex-1">
                 <h2 class="text-xl font-semibold mb-2"><?php echo htmlspecialchars($resep['judul_222263']); ?></h2>
-                <p class="mb-2"><strong>Kategori:</strong> <?php echo htmlspecialchars($resep['kategori_222263']); ?></p>
+                <p class="mb-2"><strong>Kategori:</strong> <?php echo htmlspecialchars($resep['name_222263']); ?></p>
                 <p class="mb-4"><?php echo htmlspecialchars($resep['deskripsi_222263']); ?></p>
                 <p><strong>Durasi memasak:</strong> <?php echo htmlspecialchars($resep['jumlah_222263']); ?> Menit</p>
             </div>
@@ -45,5 +48,5 @@ $reseps = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </li>
     <?php endforeach; ?>
-</ul>
+    </ul>
 </div>

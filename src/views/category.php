@@ -12,5 +12,5 @@ if ($user_id === null) {
 ?>
 
 <div class="container mx-auto p-6 mt-16 h-screen justify-center items-center">
-    <div class="text-5xl font-bold w-full h-screen text-center">Favorit Reset SOON.....</div>
+    <div class="text-5xl font-bold w-full h-screen text-center">Kategori Page SOON.....</div>
 </div>

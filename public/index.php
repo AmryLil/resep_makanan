@@ -5,8 +5,8 @@ session_start();
 $uri = str_replace('/public', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
 // Tangkap parameter `id` jika ada
-$id = isset($_GET['book_id_222263']) ? (int)$_GET['book_id_222263'] : null;
-$id_category = isset($_GET['category_id_222263']) ? (int)$_GET['category_id_222263'] : null;
+$id = isset($_GET['book_id_222263']) ? (int) $_GET['book_id_222263'] : null;
+$id_category = isset($_GET['category_id_222263']) ? (int) $_GET['category_id_222263'] : null;
 
 // Tentukan rute yang akan dimuat
 switch ($uri) {
@@ -20,18 +20,19 @@ switch ($uri) {
     case '/logout':
         $page = '../src/views/logout.php';
         break;
-    case '/signup': // Pastikan ada case untuk signup
-        $page = '../src/views/singup.php'; // Sesuaikan dengan path signup Anda
+    case '/signup':  // Pastikan ada case untuk signup
+        $page = '../src/views/signup.php';  // Sesuaikan dengan path signup Anda
         break;
-    case '/list-books':
+    case '/list-resep':
         $page = '../src/views/listbook.php';
+        break;
+    case '/favorit':
+        $page = '../src/views/favorit.php';
         break;
     case '/category':
         $page = '../src/views/category.php';
         break;
-    case '/my-books':
-        $page = '../src/views/my-books.php';
-        break;
+
     case '/update-book':
         if ($id !== null) {
             $page = '../src/views/update-book.php';
@@ -67,7 +68,7 @@ switch ($uri) {
     case '/admin/add-category':
         $page = '../src/views/dashboard/category/add_category.php';
         break;
-        
+
     case '/admin/update-category':
         if ($id_category !== null) {
             $page = '../src/views/dashboard/category/update_category.php';
@@ -100,7 +101,7 @@ switch ($uri) {
             $page = '../src/views/404.php';
         }
         break;
-    
+
     default:
         // Tampilkan halaman 404 jika rute tidak ditemukan
         $page = '../src/views/404.php';
@@ -117,15 +118,15 @@ $showNavbarFooter = !preg_match('/^\/(admin|login|signup)/', $uri);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../css/tailwind.css" rel="stylesheet">
-  <title>Digital Library</title>
+  <title>ResepCakeKU</title>
 </head>
 <body>
 
-  <?php if ($showNavbarFooter) include "../src/components/navbar.php"; ?>
-  <main class="h-max ">
+  <?php if ($showNavbarFooter) include '../src/components/navbar.php'; ?>
+  <main class="h-max text-slate-900">
     <?php include $page ?>
   </main>
-  <?php if ($showNavbarFooter) include "../src/components/footer.php"; ?>
+  <?php if ($showNavbarFooter) include '../src/components/footer.php'; ?>
   
 </body>
 </html>
