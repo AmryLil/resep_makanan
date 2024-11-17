@@ -15,7 +15,10 @@ try {
     die('Gagal terhubung ke database: ' . $e->getMessage());
 }
 // Query untuk mengambil komentar yang terkait dengan resep
-$commentQuery = 'SELECT comments_222263.comment_text_222263, comments_222263.created_at_222263, users_222263.fullname_222263
+$commentQuery = 'SELECT comments_222263.comment_text_222263, 
+                        comments_222263.comment_image_222263, 
+                        comments_222263.created_at_222263, 
+                        users_222263.fullname_222263
                  FROM comments_222263
                  JOIN users_222263 ON comments_222263.user_id_222263 = users_222263.id
                  WHERE comments_222263.resep_id_222263 = ?
@@ -143,6 +146,7 @@ if (!$recipe) {
                     </button>
                 </a>
             </div>
+            <img src="/../uploads/coment/comment_673894a596195_op1.png" alt="foto">
             <div class="mt-6">
                 <h3 class="text-xl font-semibold mb-3">Komentar</h3>
                 
@@ -150,29 +154,41 @@ if (!$recipe) {
                     <p class="text-gray-500">Belum ada komentar.</p>
                 <?php else: ?>
                     <?php foreach ($comments as $comment): ?>
-                        <div class="border-b border-gray-300 py-2">
-                            <div class=" text-gray-800 font-bold text-lg flex  items-center gap-1">
-                                <div class="avatar">
-                                    <div class="w-8 rounded-full">
-                                    <img src="https://i.pinimg.com/736x/44/84/b6/4484b675ec3d56549907807fccf75b81.jpg" />
-                                    </div>
-                                </div>    
-                                <span class="font-bold text-l"><?php echo htmlspecialchars($comment['fullname_222263']); ?> </span>
-                            </div>
-                            <p class="text-gray-600"><?php echo htmlspecialchars($comment['comment_text_222263']); ?></p>
-                            <p class="text-xs text-gray-500"><?php echo htmlspecialchars($comment['created_at_222263']); ?></p>
-                        </div>
-                    <?php endforeach; ?>
+    <div class="border-b border-gray-300 py-2">
+        <div class="text-gray-800 font-bold text-lg flex items-center gap-1">
+            <div class="avatar">
+                <div class="w-8 rounded-full">
+                    <img src="https://i.pinimg.com/736x/44/84/b6/4484b675ec3d56549907807fccf75b81.jpg" />
+                </div>
+            </div>    
+            <span class="font-bold text-l"><?php echo htmlspecialchars($comment['fullname_222263']); ?> </span>
+        </div>
+        <p class="text-gray-600"><?php echo htmlspecialchars($comment['comment_text_222263']); ?></p>
+ 
+
+<?php if (!empty($comment['comment_image_222263'])): ?>
+    <img src="/../uploads/coment/<?php echo htmlspecialchars($comment['comment_image_222263']); ?> " 
+         alt="Komentar Gambar"
+         class="mt-2 w-32 h-32 object-cover rounded">
+<?php else: ?>
+    <p class="text-sm text-gray-500">Tidak ada gambar.</p>
+<?php endif; ?>
+        <p class="text-xs text-gray-500"><?php echo htmlspecialchars($comment['created_at_222263']); ?></p>
+    </div>
+<?php endforeach; ?>
+
                 <?php endif; ?>
             </div>
 
             <?php if ($isLoggedIn): ?>
-                <form action="/../src/views/add_commen.php" method="post" class="mt-4">
-                    <input type="hidden" name="recipe_id" value="<?php echo htmlspecialchars($id); ?>">
-                    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($_SESSION['user_222263']['id']); ?>">
-                    <textarea name="comment_text" class="w-full p-2 border rounded" placeholder="Tulis komentar Anda..." required></textarea>
-                    <button type="submit" class="btn btn-primary mt-2">Kirim Komentar</button>
-                </form>
+                <form action="/../src/views/add_commen.php" method="post" enctype="multipart/form-data" class="mt-4">
+    <input type="hidden" name="recipe_id" value="<?php echo htmlspecialchars($id); ?>">
+    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($_SESSION['user_222263']['id']); ?>">
+    <textarea name="comment_text" class="w-full p-2 border rounded" placeholder="Tulis komentar Anda..." required></textarea>
+    <input type="file" name="comment_image" accept="image/*" class="mt-2">
+    <button type="submit" class="btn btn-primary mt-2">Kirim Komentar</button>
+</form>
+
             <?php endif; ?>
 
         </div>

@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
+session_start();
 
 // Pastikan pengguna sudah login
 if (!isset($_SESSION['user_222263'])) {
-    header('Location: login.php');  // Arahkan ke halaman login jika belum login
+    header('Location: login.php');
     exit;
 }
 
@@ -18,6 +19,23 @@ try {
     die('Gagal terhubung ke database: ' . $e->getMessage());
 }
 
+// Logika untuk menghapus resep favorit
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recipe_id'])) {
+    $recipeId = (int) $_POST['recipe_id'];
+    if ($recipeId > 0) {
+        try {
+            $query = 'DELETE FROM favorites_222263 WHERE user_id_222263 = ? AND resep_id_222263 = ?';
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([$userId, $recipeId]);
+            $message = 'Resep favorit berhasil dihapus.';
+        } catch (PDOException $e) {
+            $message = 'Terjadi kesalahan saat menghapus resep favorit: ' . $e->getMessage();
+        }
+    } else {
+        $message = 'Data resep tidak valid.';
+    }
+}
+
 // Query untuk mendapatkan resep favorit pengguna
 $query = 'SELECT reseps_222263.*, categories_222263.name_222263 AS nama_kategori
           FROM favorites_222263
@@ -29,6 +47,7 @@ $stmt->execute([$userId]);
 $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +58,14 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="bg-gray-100 text-slate-900">
 <div class="px-14 pt-20 pb-20">
+    <!-- Notifikasi -->
+    <?php if (!empty($message)): ?>
+        <div class="alert alert-success mb-4">
+            <?php echo htmlspecialchars($message); ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Grid Resep -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php if (empty($favorites)): ?>
             <p class="text-gray-500">Anda belum memiliki resep favorit.</p>
@@ -51,16 +78,21 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="card-body p-4">
                         <h2 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($recipe['judul_222263']); ?></h2>
                         <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($recipe['deskripsi_222263']); ?></p>
-                        <p>
-                            <strong>Kategori:</strong> <?php echo htmlspecialchars($recipe['nama_kategori']); ?>
-                        </p>
-                       
+                        <div class="flex justify-center items-center">
+                            <p>
+                                <strong>Kategori:</strong> <?php echo htmlspecialchars($recipe['nama_kategori']); ?>
+                            </p>
+                            <form method="post" class="mt-2">
+                                <input type="hidden" name="recipe_id" value="<?php echo htmlspecialchars($recipe['id']); ?>">
+                                <button type="submit" class="btn btn-error">Hapus</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
-   
 </div>
 </body>
 </html>
+

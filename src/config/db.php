@@ -6,7 +6,7 @@ class Database
     private $host = 'localhost';
     private $db_name = 'resep_222263';
     private $username = 'root';
-    private $password = 'root';
+    private $password = '';
     public $conn;
 
     public function connect()
