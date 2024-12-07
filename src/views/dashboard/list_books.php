@@ -5,17 +5,18 @@ try {
     $database = new Database();
     $pdo = $database->connect();
 } catch (PDOException $e) {
-    die("Gagal terhubung ke database: " . $e->getMessage());
+    die('Gagal terhubung ke database: ' . $e->getMessage());
 }
 
 // Query dengan JOIN untuk menggabungkan tabel reseps dan categories
-$query = "SELECT reseps_222263.*, categories_222263.name_222263 AS nama_kategori 
+$query = 'SELECT reseps_222263.*, categories_222263.name_222263 AS nama_kategori 
           FROM reseps_222263 
-          JOIN categories_222263 ON reseps_222263.kategori_222263 = categories_222263.id";
+          JOIN categories_222263 ON reseps_222263.kategori_222263 = categories_222263.id';
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <div class="container mx-auto p-2 h-full">
     <div class="flex justify-between bg-black items-center p-4 rounded-lg mb-3">

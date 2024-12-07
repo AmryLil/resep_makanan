@@ -59,6 +59,9 @@ switch ($uri) {
     case '/admin/books':
         $page = '../src/views/dashboard/books/index.php';
         break;
+    case '/admin/laporan':
+        $page = '../src/views/dashboard/books/laporan.php';
+        break;
     case '/admin/logout':
         $page = '../src/views/dashboard/logout.php';
         break;

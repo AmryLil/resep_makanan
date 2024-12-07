@@ -1,18 +1,18 @@
 <?php
 require_once __DIR__ . '../../../../config/db.php';
-$userId = isset($_SESSION['user_222263']['id']) ? (int)$_SESSION['user_222263']['id'] : null;
+$userId = isset($_SESSION['user_222263']['id']) ? (int) $_SESSION['user_222263']['id'] : null;
 
 if ($userId === null) {
-    echo "User ID tidak ditemukan. Pastikan Anda sudah login.";
+    echo 'User ID tidak ditemukan. Pastikan Anda sudah login.';
     exit;
 }
 try {
     $database = new Database();
     $pdo = $database->connect();
 } catch (PDOException $e) {
-    die("Gagal terhubung ke database: " . $e->getMessage());
+    die('Gagal terhubung ke database: ' . $e->getMessage());
 }
-$query = "SELECT * FROM categories_222263";
+$query = 'SELECT * FROM categories_222263';
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = htmlspecialchars($_POST['title']);
     $category = htmlspecialchars($_POST['category']);
     $description = htmlspecialchars($_POST['description']);
-    $quantity = (int)$_POST['quantity'];
-    $cover = null; // Pastikan cover di-set
-    $userId = isset($userId) ? $userId : null; // Pastikan userId di-set
+    $quantity = (int) $_POST['quantity'];
+    $cover = null;  // Pastikan cover di-set
+    $userId = isset($userId) ? $userId : null;  // Pastikan userId di-set
     $bahan = htmlspecialchars($_POST['bahan']);
     $langkah_pembuatan = htmlspecialchars($_POST['langkah_pembuatan']);
 
@@ -31,53 +31,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $langkahPembuatanList = explode("\n", trim($langkah_pembuatan));
 
     // Menggabungkan bahan dan langkah pembuatan menjadi string
-    $bahan = implode(", ", $bahanList); // Misalnya, menggabungkan dengan koma
-    $langkah_pembuatan = implode(", ", $langkahPembuatanList); // Misalnya, menggabungkan dengan koma
+    $bahan = implode(', ', $bahanList);  // Misalnya, menggabungkan dengan koma
+    $langkah_pembuatan = implode(', ', $langkahPembuatanList);  // Misalnya, menggabungkan dengan koma
 
     if (isset($_FILES['cover'])) {
-        echo "File uploaded: " . $_FILES['cover']['name'] . "<br>";
-        echo "Error code: " . $_FILES['cover']['error'] . "<br>";
-    
+        echo 'File uploaded: ' . $_FILES['cover']['name'] . '<br>';
+        echo 'Error code: ' . $_FILES['cover']['error'] . '<br>';
+
         if ($_FILES['cover']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = __DIR__ . '/../../uploads/covers/';
-    
+
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
-                echo "Folder created: " . $uploadDir . "<br>";
+                echo 'Folder created: ' . $uploadDir . '<br>';
             } else {
-                echo "Folder exists: " . $uploadDir . "<br>";
+                echo 'Folder exists: ' . $uploadDir . '<br>';
             }
-    
+
             $coverFile = basename($_FILES['cover']['name']);
             $uploadFile = $uploadDir . $coverFile;
-    
+
             if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadFile)) {
                 $cover = $coverFile;
-                echo "File uploaded successfully: " . $coverFile . "<br>";
+                echo 'File uploaded successfully: ' . $coverFile . '<br>';
             } else {
-                echo "Gagal meng-upload file cover.<br>";
+                echo 'Gagal meng-upload file cover.<br>';
             }
         } else {
-            echo "Error uploading file: " . $_FILES['cover']['error'] . "<br>";
+            echo 'Error uploading file: ' . $_FILES['cover']['error'] . '<br>';
         }
     }
 
-   
     try {
-        $query = "INSERT INTO reseps_222263 (judul_222263, kategori_222263, deskripsi_222263, jumlah_222263, cover_222263, user_id_222263, bahan_222263, langkah_pembuatan_222263) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $query = 'INSERT INTO reseps_222263 (judul_222263, kategori_222263, deskripsi_222263, jumlah_222263, cover_222263, user_id_222263, bahan_222263, langkah_pembuatan_222263) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         $stmt = $pdo->prepare($query);
         $stmt->execute([$title, $category, $description, $quantity, $cover, $userId, $bahan, $langkah_pembuatan]);
-        
+
         // Redirect setelah berhasil menambahkan
-        header("Location: /public/admin/books");
-        exit(); // Pastikan untuk menghentikan eksekusi script
+        header('Location: /public/admin/books');
+        exit();  // Pastikan untuk menghentikan eksekusi script
     } catch (PDOException $e) {
-        echo "Gagal menambahkan buku ke database: " . $e->getMessage() . "<br>";
+        echo 'Gagal menambahkan buku ke database: ' . $e->getMessage() . '<br>';
     }
 }
 ?>
 <link rel="stylesheet" href="../../../../css/tailwind.css">
-<?php include "../src/views/dashboard/sidebar.php" ?>
+<?php include '../src/views/dashboard/sidebar.php' ?>
 <div class="p-4 sm:ml-64 h-full">
     <div class="p-3 py-0 border-2  border-gray-200   border-dashed rounded-lg dark:border-gray-700">
     <div class="flex h-full container mx-auto p-4 ">
@@ -106,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           class="form-textarea block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3"></textarea>
         </div>
             <div>
-                <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Waktu maks:</label>
+                <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Waktu Maksimum (menit): </label>
                 <input type="number" id="quantity" name="quantity" required min="1"
                        class="form-input block w-full border border-slate-500 rounded-md shadow-sm py-2 px-3">
             </div>
@@ -132,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            
 
             <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-                Add Book
+                Tambah Resep
             </button>
         </form>
     </div>
 
     <!-- Image Placeholder -->
-    <div class="hidden md:flex w-full md:w-1/2 bg-gray-100 ">
-        <img src="../../public/images/banner2.jpg" alt="Placeholder Image" class="rounded-md shadow-md h-[120vh] w-full object-center">
+    <div class="hidden md:flex w-full md:w-1/2 bg-gray-100 h-full">
+        <img src="https://plus.unsplash.com/premium_photo-1663924748954-672d5d53ad05?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Y29va3xlbnwwfHwwfHx8MA%3D%3D" alt="Placeholder Image" class="rounded-md shadow-md h-[160vh] w-full object-cover">
     </div>
 </div>
     </div>

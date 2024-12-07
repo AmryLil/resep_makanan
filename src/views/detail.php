@@ -26,7 +26,7 @@ $commentQuery = 'SELECT comments_222263.comment_text_222263,
 $commentStmt = $pdo->prepare($commentQuery);
 $commentStmt->execute([$id]);
 $comments = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
-
+$totalComments = count($comments);
 // Query untuk mendapatkan data resep berdasarkan ID
 $query = 'SELECT reseps_222263.*, categories_222263.name_222263 AS nama_kategori
           FROM reseps_222263
@@ -86,25 +86,34 @@ if (!$recipe) {
             </p>
 
             <p>
-                <strong class="mb-2">Waktu Pembuatan:</strong><br>
-                <?php echo htmlspecialchars($recipe['jumlah_222263']); ?> menit
+                <strong class="mb-2">Waktu Masak:</strong><br>
+                <?php
+                $totalMenit = (int) $recipe['jumlah_222263'];  // Pastikan variabel jumlah adalah integer
+                if ($totalMenit >= 60) {
+                    $jam = floor($totalMenit / 60);
+                    $menit = $totalMenit % 60;
+                    echo htmlspecialchars($jam) . ' jam' . ($menit > 0 ? ' ' . htmlspecialchars($menit) . ' menit' : '');
+                } else {
+                    echo htmlspecialchars($totalMenit) . ' menit';
+                }
+                ?>
             </p>
 
             <p class="">
             <strong class="mb-2">Bahan:</strong><br>
             <?php
-                // Menghapus semua angka yang diikuti titik
-                $bahan = preg_replace('/\d+\./', '', $recipe['bahan_222263']);  // Menghilangkan angka dan titik di seluruh teks
-                $bahan_array = array_filter(array_map('trim', explode(',', $bahan)));
+            // Menghapus semua angka yang diikuti titik
+            $bahan = preg_replace('/\d+\./', '', $recipe['bahan_222263']);  // Menghilangkan angka dan titik di seluruh teks
+            $bahan_array = array_filter(array_map('trim', explode(',', $bahan)));
 
-                // Membuat list dengan bullet points
-                echo '<ul style="padding-left:40px; list-style-type: disc;">';  // Menambahkan style untuk memastikan bullet points
-                foreach ($bahan_array as $item) {
-                    if (!empty(trim($item))) {
-                        echo '<li>' . htmlspecialchars($item) . '</li>';  // Menampilkan bahan dalam list dengan bullet point
-                    }
+            // Membuat list dengan bullet points
+            echo '<ul style="padding-left:40px; list-style-type: disc;">';  // Menambahkan style untuk memastikan bullet points
+            foreach ($bahan_array as $item) {
+                if (!empty(trim($item))) {
+                    echo '<li>' . htmlspecialchars($item) . '</li>';  // Menampilkan bahan dalam list dengan bullet point
                 }
-                echo '</ul>';
+            }
+            echo '</ul>';
             ?>
 
 
@@ -114,18 +123,18 @@ if (!$recipe) {
             <p class=""> 
                 <strong class="mb-2">Cara Membuat:</strong><br>
                 <?php
-                    // Menghapus angka diikuti titik pada awal setiap langkah
-                    $langkah = preg_replace('/\d+\./', '', $recipe['langkah_pembuatan_222263']);  // Menghilangkan angka dan titik di awal langkah
-                    $langkah_array = array_filter(array_map('trim', explode(',', $langkah)));
+                // Menghapus angka diikuti titik pada awal setiap langkah
+                $langkah = preg_replace('/\d+\./', '', $recipe['langkah_pembuatan_222263']);  // Menghilangkan angka dan titik di awal langkah
+                $langkah_array = array_filter(array_map('trim', explode(',', $langkah)));
 
-                    // Membuat list dengan bullet points
-                    echo '<ul style="padding-left:40px; list-style-type: disc;">';
-                    foreach ($langkah_array as $item) {
-                        if (!empty(trim($item))) {
-                            echo '<li>' . htmlspecialchars($item) . '</li>';  // Menampilkan langkah dalam list dengan bullet point
-                        }
+                // Membuat list dengan bullet points
+                echo '<ul style="padding-left:40px; list-style-type: disc;">';
+                foreach ($langkah_array as $item) {
+                    if (!empty(trim($item))) {
+                        echo '<li>' . htmlspecialchars($item) . '</li>';  // Menampilkan langkah dalam list dengan bullet point
                     }
-                    echo '</ul>';
+                }
+                echo '</ul>';
                 ?>
 
             </p>
@@ -140,15 +149,21 @@ if (!$recipe) {
                 </form>
                 <?php endif; ?>
 
-                <a href="javascript:history.back()" class="">
+                
+
+
+                <a href="/public/list-resep" class="">
                     <button class="btn btn-error">
                     Kembali
                     </button>
                 </a>
             </div>
-            <img src="/../uploads/coment/comment_673894a596195_op1.png" alt="foto">
+            <!-- <img src="/../uploads/coment/comment_673894a596195_op1.png" alt="foto"> -->
             <div class="mt-6">
-                <h3 class="text-xl font-semibold mb-3">Komentar</h3>
+                <!-- $totalComments = count($comments); -->
+    <h3 class="text-xl font-semibold mb-3">
+        Komentar (<?php echo htmlspecialchars($totalComments); ?>)
+    </h3>
                 
                 <?php if (empty($comments)): ?>
                     <p class="text-gray-500">Belum ada komentar.</p>
@@ -163,6 +178,7 @@ if (!$recipe) {
             </div>    
             <span class="font-bold text-l"><?php echo htmlspecialchars($comment['fullname_222263']); ?> </span>
         </div>
+        
         <p class="text-gray-600"><?php echo htmlspecialchars($comment['comment_text_222263']); ?></p>
  
 
@@ -171,7 +187,7 @@ if (!$recipe) {
          alt="Komentar Gambar"
          class="mt-2 w-32 h-32 object-cover rounded">
 <?php else: ?>
-    <p class="text-sm text-gray-500">Tidak ada gambar.</p>
+    <!-- <p class="text-sm text-gray-500">Tidak ada gambar.</p> -->
 <?php endif; ?>
         <p class="text-xs text-gray-500"><?php echo htmlspecialchars($comment['created_at_222263']); ?></p>
     </div>
@@ -194,28 +210,47 @@ if (!$recipe) {
         </div>
     </div>
 </div>
-<script>
-    function toggleLove() {
-        const loveButton = document.getElementById('loveButton');
-        const loveIcon = document.getElementById('loveIcon');
 
-        // Toggle loved class and color
-        if (loveButton.classList.contains('loved')) {
-            loveButton.classList.remove('loved');
-            loveIcon.style.color = 'white'; // Reset color to white
-            loveIcon.classList.remove('scale-up'); // Menghapus efek skala
-        } else {
-            loveButton.classList.add('loved');
-            loveIcon.style.color = 'red'; // Set color to red
-            loveIcon.classList.add('scale-up'); // Menambahkan efek skala
-        }
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButton = document.getElementById('likeButton');
+    const likeCount = document.getElementById('likeCount');
+    const likeText = document.getElementById('likeText');
+    const recipeId = likeButton.getAttribute('data-recipe-id');
+    const isLiked = likeButton.getAttribute('data-liked') === 'true';
 
-        // Hapus kelas skala setelah animasi selesai
-        setTimeout(() => {
-            loveIcon.classList.remove('scale-up');
-        }, 300); // 300 ms sesuai durasi transisi
-    }
-</script>
+    // Fungsi untuk mengubah status like
+    likeButton.addEventListener('click', function() {
+        // Kirim request AJAX untuk memperbarui like di database
+        fetch('/../src/views/like.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                recipeId: recipeId
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update UI berdasarkan respons
+                likeCount.textContent = data.likes;
+                likeText.textContent = data.liked ? 'Unlike' : 'Like';
+                likeButton.setAttribute('data-liked', data.liked ? 'true' : 'false');
+            } else {
+                alert('Gagal memperbarui like');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan');
+        });
+    });
+});
+</script> -->
+
 
 </body>
 </html>
+

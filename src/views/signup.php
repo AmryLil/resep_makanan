@@ -5,6 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link href="../css/tailwind.css" rel="stylesheet">
+    <script>
+        function validateForm(event) {
+            event.preventDefault();  // Prevent form submission
+            let error_message = '';
+            
+            // Get form values
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+
+            // Validation checks
+            if (password !== confirm_password) {
+                error_message = 'Passwords do not match.';
+            } else if (fullname === '' || username === '' || email === '' || password === '') {
+                error_message = 'All fields are required.';
+            } else if (password.length < 8) {
+                error_message = 'Password should be at least 8 characters.';
+            }
+
+            // Display error message
+            const errorMessageElement = document.getElementById('error_message');
+            if (error_message) {
+                errorMessageElement.textContent = error_message;
+                errorMessageElement.style.display = 'block';
+            } else {
+                errorMessageElement.style.display = 'none';
+                // If no errors, submit the form (you can use AJAX here for smoother experience)
+                document.getElementById('signupForm').submit();
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-100">
 <div class="flex h-screen">
@@ -21,8 +54,12 @@
     <div class="max-w-md w-full p-6">
       <h1 class="text-3xl font-semibold mb-6 text-black text-center">Sign Up</h1>
       <p class="text-sm font-semibold mb-6 text-gray-500 text-center">Join to Our Community with all-time access and free</p>
+
+      <!-- Error message display -->
       
-      <form action="/../src/controller/SignupController.php" method="POST" class="space-y-4">
+
+      <!-- Sign-up form -->
+      <form id="signupForm" action="/../src/controller/SignupController.php" method="POST" class="space-y-4" onsubmit="validateForm(event)">
         <div>
           <label for="fullname" class="block text-sm font-medium text-gray-700">Fullname</label>
           <input type="text" id="fullname" name="fullname_222263" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" required>
@@ -45,6 +82,7 @@
             <input type="password" id="confirm_password" name="confirm_password" class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" required>
           </div>
         </div>
+        <div style="color: red;" id="error_message"  class="mb-4  text-center" style="display: none;"></div>
         <div>
           <button type="submit" name="signup" class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800  focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
         </div>

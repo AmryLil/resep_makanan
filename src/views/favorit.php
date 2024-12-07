@@ -71,7 +71,7 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-gray-500">Anda belum memiliki resep favorit.</p>
         <?php else: ?>
             <?php foreach ($favorites as $recipe): ?>
-                <div class="card shadow-lg bg-white rounded-lg overflow-hidden">
+                <a href="../src/views/detail.php?id=<?php echo $recipe['id']; ?>" class="card shadow-lg bg-white rounded-lg overflow-hidden">
                     <figure>
                         <img src="/src/views/uploads/covers/<?php echo htmlspecialchars($recipe['cover_222263']); ?>" alt="Cover" class="w-full h-56 object-cover">
                     </figure>
@@ -88,7 +88,7 @@ $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </form>
                         </div>
                     </div>
-                </div>
+                </a>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>

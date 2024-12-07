@@ -25,8 +25,11 @@ class SignupController
                 return;
             }
 
+            // Hash password untuk keamanan
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
             // Panggil method signup pada model User
-            $user = $this->user->signup($fullname, $username, $email, $password);
+            $user = $this->user->signup($fullname, $username, $email, $hashed_password);
 
             if ($user) {  // Periksa jika signup berhasil
                 session_start();

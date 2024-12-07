@@ -3,6 +3,7 @@ require_once __DIR__ . '/../config/db.php';
 
 // Get the selected category from the query string
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
+$userId = 1;  // Ganti dengan ID pengguna yang login (bisa diambil dari sesi login)
 
 // Create a database connection
 try {
@@ -12,13 +13,47 @@ try {
     die('Gagal terhubung ke database: ' . $e->getMessage());
 }
 
+// Handle like request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recipe_id'])) {
+    $recipeId = $_POST['recipe_id'];
+
+    // Ambil data user_likes untuk memeriksa apakah user sudah memberi like
+    $checkQuery = 'SELECT likes, user_likes FROM reseps_222263 WHERE id = ?';
+    $stmt = $pdo->prepare($checkQuery);
+    $stmt->execute([$recipeId]);
+    $recipe = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($recipe) {
+        $userLikes = $recipe['user_likes'] ? explode(',', $recipe['user_likes']) : [];
+        if (!in_array($userId, $userLikes)) {
+            // Tambahkan like
+            $userLikes[] = $userId;
+            $newUserLikes = implode(',', $userLikes);
+            $updateQuery = 'UPDATE reseps_222263 SET likes = likes + 1, user_likes = ? WHERE id = ?';
+            $stmt = $pdo->prepare($updateQuery);
+            $stmt->execute([$newUserLikes, $recipeId]);
+        } else {
+            // Hapus like
+            $userLikes = array_diff($userLikes, [$userId]);
+            $newUserLikes = implode(',', $userLikes);
+            $updateQuery = 'UPDATE reseps_222263 SET likes = likes - 1, user_likes = ? WHERE id = ?';
+            $stmt = $pdo->prepare($updateQuery);
+            $stmt->execute([$newUserLikes, $recipeId]);
+        }
+    }
+
+    // Redirect untuk mencegah refresh mengirim ulang form
+    header('Location: /public/list-resep' . $selectedCategory);
+    exit;
+}
+
 // Fetch distinct categories for the filter
 $categoryQuery = 'SELECT DISTINCT categories_222263.id, categories_222263.name_222263 AS nama_kategori 
                   FROM categories_222263
                   JOIN reseps_222263 ON categories_222263.id = reseps_222263.kategori_222263';
 $categories = $pdo->query($categoryQuery)->fetchAll(PDO::FETCH_ASSOC);
 
-// Prepare the query to fetch books with a join to get the category name
+// Prepare the query to fetch recipes
 $query = 'SELECT reseps_222263.*, categories_222263.name_222263 AS nama_kategori
           FROM reseps_222263
           JOIN categories_222263 ON reseps_222263.kategori_222263 = categories_222263.id';
@@ -33,7 +68,7 @@ if ($selectedCategory) {
     $stmt->execute();
 }
 
-$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$recipes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -64,44 +99,44 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </form>
 
-    <!-- Books List -->
+    <!-- Recipes List -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <?php if ($books): ?>
-    <?php foreach ($books as $book): ?>
-        <div class="bg-slate-900  hover:bg-slate-950 hover:scale-105 duration-150 transition-all p-2 rounded-lg shadow-md text-slate-50">
-            <a href="../src/views/detail.php?id=<?php echo $book['id']; ?>">
-                <div class="h-72">
-                    <img src="/../src/views/uploads/covers/<?php echo htmlspecialchars($book['cover_222263']); ?>" alt="Cover"
-                         class="w-full h-full object-cover rounded-lg mb-2">
-                </div>
+    <?php if ($recipes): ?>
+        <?php foreach ($recipes as $recipe): ?>
+            <div class="bg-slate-900 hover:bg-slate-950 hover:scale-105 duration-150 transition-all p-2 rounded-lg shadow-md text-slate-50">
+                <a href="../src/views/detail.php?id=<?php echo $recipe['id']; ?>">
+                    <div class="h-72">
+                        <img src="/../src/views/uploads/covers/<?php echo htmlspecialchars($recipe['cover_222263']); ?>" alt="Cover"
+                             class="w-full h-full object-cover rounded-lg mb-2">
+                    </div>
+                </a>
                 <div class="py-4 px-2">
-                    <h2 class="text-lg font-bold mb-1"><?php echo htmlspecialchars($book['judul_222263']); ?></h2>
-                    <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($book['deskripsi_222263']); ?></p>
-                    <span class="block text-gray-100 mt-2"><?php echo htmlspecialchars($book['nama_kategori']); ?></span>
-                    
-                    <!-- Bagian Rating dengan Data Dummy -->
-                    <!-- <div class="flex items-center mt-2">
-                        <?php
-                        // Data dummy rating
-                        $dummyRating = 4;  // Ganti dengan nilai lain untuk testing
-                        $maxRating = 5;  // Maksimal rating
-                        ?>
-                        <?php for ($i = 1; $i <= $maxRating; $i++): ?>
-                            <svg class="w-5 h-5 <?php echo $i <= $dummyRating ? 'text-yellow-400' : 'text-gray-400'; ?>" 
-                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 15l-5.878 3.09 1.121-6.532L0 6.29l6.596-.577L10 0l2.404 5.712L20 6.29l-5.243 5.268 1.121 6.532z"/>
-                            </svg>
-                        <?php endfor; ?>
-                    </div> -->
-                </div>
-            </a>
-        </div>
-    <?php endforeach; ?>
-<?php else: ?>
-    <p class="text-center col-span-full text-gray-600">Tidak ada buku ditemukan.</p>
-<?php endif; ?>
+                    <h2 class="text-lg font-bold mb-1"><?php echo htmlspecialchars($recipe['judul_222263']); ?></h2>
+                    <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($recipe['deskripsi_222263']); ?></p>
+                    <span class="block text-gray-100 mt-2"><?php echo htmlspecialchars($recipe['nama_kategori']); ?></span>
 
+                    <!-- Like Button -->
+                    <form method="POST" action="" onsubmit="setTimeout(() => { location.reload(); }, 50);">
+    <input type="hidden" name="recipe_id" value="<?php echo $recipe['id']; ?>">
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3 rounded">
+        <?php
+        $userLikes = $recipe['user_likes'] ? explode(',', $recipe['user_likes']) : [];
+        if (in_array($userId, $userLikes)) {
+            echo "Unlike ({$recipe['likes']})";
+        } else {
+            echo "Like ({$recipe['likes']})";
+        }
+        ?>
+    </button>
+</form>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-center col-span-full text-gray-600">Tidak ada resep ditemukan.</p>
+    <?php endif; ?>
     </div>
 </div>
+
 </body>
 </html>
